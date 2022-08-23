@@ -1,0 +1,43 @@
+[*]
+[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
+[*] Tue Aug 23 07:29:51 2022
+[*]
+[dumpfile] "/home/sdzz/project/Divider/logs/vlt_dump.vcd"
+[dumpfile_mtime] "Tue Aug 23 07:24:41 2022"
+[dumpfile_size] 894284
+[savefile] "/home/sdzz/project/Divider/logs/vlt_dump.gtkw"
+[timestart] 1
+[size] 1920 1016
+[pos] -1 -1
+*0.000000 4 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[sst_width] 233
+[signals_width] 436
+[sst_expanded] 1
+[sst_vpaned_height] 289
+@28
+TOP.clk
+TOP.rst
+TOP.block_i
+TOP.sign_op_1_i
+TOP.sign_op_2_i
+@22
+TOP.op_1_i[63:0]
+TOP.op_2_i[63:0]
+@28
+TOP.req_valid_i
+@22
+TOP.quotient_o[63:0]
+TOP.remainder_o[63:0]
+@28
+TOP.ready_o
+@29
+TOP.valid_o
+@22
+TOP.top.pre_state[6:0]
+TOP.top.next_state[6:0]
+TOP.top.next_state_t_idle[6:0]
+@200
+-=================Core
+[pattern_trace] 1
+[pattern_trace] 0
