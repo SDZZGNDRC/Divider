@@ -73,6 +73,7 @@ module top (
 /* Core */
     wire[64:0] mask_t;
     wire[64:0] mask;
+    wire[129:0] divider_recovery;
     wire[129:0] divider_t;
     wire[129:0] divider;
     wire[129:0] remainder_t;
@@ -82,27 +83,31 @@ module top (
     wire[64:0] quotient;
     wire add_flag;
     wire[129:0] next_remainder;
-    assign add_flag = remainder[64];
+    assign add_flag = remainder[129];
     assign next_remainder = (add_flag==1'b1) ? remainder+divider : remainder-divider;
     Reg #(65, 65'b0) reg_mask (clk, rst, mask_t, mask, reg_wen);
     Reg #(130, 130'h0) reg_divider (clk, rst, divider_t, divider, reg_wen);
     Reg #(130, 130'h0) reg_remainder (clk, rst, remainder_t, remainder, reg_wen);
     Reg #(65, 65'h0) reg_quotient (clk, rst, quotient_t, quotient, reg_wen);
-    assign mask_t = (pre_state==7'd1) ? 65'h10000000000000000 : mask>>1'b1;
-    assign divider_t = (pre_state==7'd1) ? {op_2_abs, 65'b0} : divider>>1'b1;
-    assign remainder_t= (pre_state==7'd1) ? {65'b0, op_1_abs} : next_remainder;
-    assign quotient_t = (pre_state==7'd1) ? {65'b0} : quotient | quotient_t_bit;
-    assign quotient_t_bit = (add_flag==1'b1) ? 65'h0 : mask;
+    Reg #(130, 130'h0) reg_divider_recovery (clk, rst, divider, divider_recovery, reg_wen);
+    assign mask_t = (pre_state==7'd0) ? 65'h10000000000000000 : mask>>1'b1;
+    assign divider_t = (pre_state==7'd0 && req_valid_i==1'b1) ? {1'b0, op_2_abs, 64'b0} : divider>>1'b1;
+    assign remainder_t= (pre_state==7'd0 && req_valid_i==1'b1) ? {65'b0, op_1_abs} : next_remainder;
+    assign quotient_t = (pre_state==7'd0 && req_valid_i==1'b1) ? {65'b0} : quotient | quotient_t_bit;
+    assign quotient_t_bit = (remainder_t[129]==1'b1) ? 65'h0 : mask;
 
 /* quotient_o */
     assign quotient_o = (~sign_op_1^sign_op_2 == 1'b1) ? quotient[63:0] : {~quotient+64'h1}[63:0];
 
 /* remainder_o */
-    assign remainder_o = (sign_op_1==1'b1) ? remainder[63:0] : {~remainder[63:0]+64'h1}[63:0];
-
-	initial begin
+/* verilator lint_off UNUSED */
+    wire[129:0] remainder_r;
+    assign remainder_r = (remainder[129]==1'b1) ? remainder+divider_recovery : remainder;
+    assign remainder_o = (sign_op_1==1'b0) ? remainder_r[63:0] : {~remainder_r[63:0]+64'h1}[63:0];
+/* verilator lint_on UNUSED */
+/* 	initial begin
 		$dumpfile("logs/vlt_dump.vcd");
 		$dumpvars();
-	end
+	end */
 
 endmodule

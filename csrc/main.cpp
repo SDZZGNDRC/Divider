@@ -2,6 +2,7 @@
 #include "verilated.h"
 
 #define MOSTCYCLE 1000
+#define MOSTINST 1000000
 #define MAXOP 10
 uint8_t req_valid_flag = 0;
 uint8_t has_valid = 1;
@@ -20,11 +21,15 @@ uint8_t get_req_valid_flag(int count)
     }
     if(rand()%10>7 and count > newest_valid_count)
     {
-        printf("push a req\n");
+        /* printf("push a req\n"); */
         has_valid = 0;
         req_valid_flag = 1;
         op_1 = rand()%MAXOP;
-        op_2 = rand()%MAXOP;
+        do
+        {
+            op_2 = rand()%MAXOP;
+        }
+        while(op_2==0); // make sure op_2(divider) is not zero.
         return 1;
     }
     return 0;
@@ -39,13 +44,14 @@ int main(int argc, char** argv, char** env)
 	Vtop* top = new Vtop{contextp};
     top->rst = 0;
     int count = 0;
-	while (count <= MOSTCYCLE && !contextp->gotFinish())
+    int count_inst = 0;
+	while (count_inst < MOSTINST && !contextp->gotFinish())
 	{
         /* Get the outputs */
-        printf("quotient_o=%lu\n", top->quotient_o);
+/*         printf("quotient_o=%lu\n", top->quotient_o);
         printf("remainder_o=%lu\n", top->remainder_o);
         printf("ready_o=%d\n", top->ready_o);
-        printf("valid_o=%d\n", top->valid_o);
+        printf("valid_o=%d\n", top->valid_o); */
         if(top->valid_o==1 && req_valid_flag==1)
         {
             newest_valid_count = count;
@@ -53,11 +59,12 @@ int main(int argc, char** argv, char** env)
             quotient_c = top->quotient_o;
             remainder_c = top->remainder_o;
             req_valid_flag = 0;
-            printf("=======================\n");
+            /* printf("=======================\n"); */
             printf("op_1 %lu\n", op_1);
             printf("op_2 %lu\n", op_2);
             printf("quotient %lu\n", quotient_c);
             printf("remainder %lu\n", remainder_c);
+            count_inst++;
         }
         /* posedge */
         top->clk = 1;
