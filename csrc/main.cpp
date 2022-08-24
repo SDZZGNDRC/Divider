@@ -1,5 +1,6 @@
 #include "Vtop.h"
 #include "verilated.h"
+#include <stdlib.h>
 
 #define MOSTCYCLE 1000
 #define MOSTINST 1000000
@@ -37,6 +38,7 @@ uint8_t get_req_valid_flag(int count)
 
 int main(int argc, char** argv, char** env)
 {
+    srand((unsigned)time(NULL)); 
 	Verilated::mkdir("logs");
 	VerilatedContext* contextp = new VerilatedContext;
 	contextp->traceEverOn(true);
